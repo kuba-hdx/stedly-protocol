@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Stedly Protocol — Don't check your email. Approve it.</title>
+<meta name="description" content="Stedly drafts your replies and builds your documents before you wake up. The autonomous inbox for client-services professionals."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css?v=15"/>
+<link rel="stylesheet" href="screens.css?v=14"/>
+<link rel="stylesheet" href="protocol.css?v=9"/>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Stedly runtime config (Google OAuth, Firebase, Stripe Payment Links) -->
+<script src="config.js?v=5"></script>
+
+<!-- Google Identity Services — for real Gmail OAuth -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<!-- Firebase (compat SDK — sets window.firebase.auth() etc.) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+
+<!-- jsPDF (UMD) — for generating real attached PDFs from the workstation -->
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+
+<!-- React PRODUCTION builds — drops ~280KB vs dev + removes per-render warnings + faster reconciliation -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="module">
+  import * as ogl from "https://esm.sh/ogl@1.0.11";
+  window.ogl = ogl;
+  window.dispatchEvent(new Event("ogl-ready"));
+</script>
+<script type="module">
+  import * as THREE from "https://esm.sh/three@0.160.0";
+  window.THREE = THREE;
+  window.dispatchEvent(new Event("three-ready"));
+</script>
+
+<!-- Temporary PIN lock — must load BEFORE app.jsx since app.jsx references window.LockGate -->
+<script type="text/babel" src="lock.jsx?v=1"></script>
+
+<script type="text/babel" src="icons.jsx?v=2"></script>
+<script type="text/babel" src="gradient-blinds.jsx"></script>
+<script type="text/babel" src="color-bends.jsx?v=1"></script>
+<!-- Brand directory loads BEFORE trust.jsx so verifiedSender + lookalike work on first call -->
+<script type="text/babel" src="brands.js?v=1"></script>
+<script type="text/babel" src="gmail.jsx?v=6"></script>
+<script type="text/babel" src="trust.jsx?v=2"></script>
+<script type="text/babel" src="relationship.jsx?v=2"></script>
+<script type="text/babel" src="categorizer.js?v=2"></script>
+<script type="text/babel" src="popover.jsx?v=1"></script>
+<script type="text/babel" src="pdf.jsx?v=1"></script>
+<script type="text/babel" src="auth.js?v=1"></script>
+<script type="text/babel" src="billing.js?v=1"></script>
+<script type="text/babel" src="auth-ui.jsx?v=2"></script>
+<script type="text/babel" src="screenshots.jsx?v=3"></script>
+<script type="text/babel" src="dashboard.jsx?v=10"></script>
+<script type="text/babel" src="sections.jsx?v=3"></script>
+<script type="text/babel" src="app.jsx?v=4"></script>
+</body>
+</html>

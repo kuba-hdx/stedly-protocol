@@ -1,0 +1,42 @@
+# Stedly Protocol prototype — .gitignore
+
+# Dependencies (none today; reserved for future Next.js port)
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment + local-only config (config.js IS tracked — its values are
+# public-by-design per the comments in the file. If you add server-side
+# secrets later, switch to .env and keep them out of git.)
+.env
+.env.local
+.env.*.local
+
+# Build / cache directories
+dist/
+build/
+.next/
+out/
+.cache/
+.vercel/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Backup files we sometimes generate during turn-by-turn dev
+*.bak
+*.bak.*
