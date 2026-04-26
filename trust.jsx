@@ -672,7 +672,9 @@
     const sev = link.severity || "safe";
     const reasons = link.reasons || [];
 
-    return (
+    // PORTAL: render to document.body so backdrop-filter / transform
+    // ancestors don't trap our position:fixed overlay inside a sub-region.
+    const modal = (
       <div className="trust-modal-overlay" ref={overlayRef} role="dialog" aria-modal="true" aria-labelledby="trust-modal-title" onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
         <div className={`trust-modal sev-${sev}`}>
           <header className="trust-modal-head">
@@ -733,6 +735,7 @@
         </div>
       </div>
     );
+    return ReactDOM.createPortal(modal, document.body);
   }
 
   // Hook for components to use the click-guard. Returns a `guard` function

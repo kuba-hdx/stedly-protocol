@@ -137,20 +137,24 @@
       "aria-describedby": open ? "stedly-tooltip" : undefined,
     };
 
+    // PORTAL: render the tip into document.body so backdrop-filter /
+    // transform / contain ancestors don't trap our position:fixed.
+    const tip = open && (
+      <div
+        ref={tipRef}
+        id="stedly-tooltip"
+        role="tooltip"
+        className={`stedly-tooltip place-${pos.place} ${className}`}
+        style={{ top: pos.top, left: pos.left }}>
+        {content}
+        <span className={`stedly-tooltip-arrow place-${pos.place}`} aria-hidden="true"/>
+      </div>
+    );
+
     return (
       <>
         {React.cloneElement(children, triggerProps)}
-        {open && (
-          <div
-            ref={tipRef}
-            id="stedly-tooltip"
-            role="tooltip"
-            className={`stedly-tooltip place-${pos.place} ${className}`}
-            style={{ top: pos.top, left: pos.left }}>
-            {content}
-            <span className={`stedly-tooltip-arrow place-${pos.place}`} aria-hidden="true"/>
-          </div>
-        )}
+        {tip && ReactDOM.createPortal(tip, document.body)}
       </>
     );
   }
@@ -244,19 +248,22 @@
       "aria-haspopup": "dialog",
     });
 
+    // PORTAL out — same containing-block-trap fix as Tooltip.
+    const pop = open && (
+      <div
+        ref={popRef}
+        role="dialog"
+        className={`stedly-popover place-${pos.place} ${className}`}
+        style={{ top: pos.top, left: pos.left }}>
+        {children}
+        <span className={`stedly-popover-arrow place-${pos.place}`} aria-hidden="true"/>
+      </div>
+    );
+
     return (
       <>
         {triggerEl}
-        {open && (
-          <div
-            ref={popRef}
-            role="dialog"
-            className={`stedly-popover place-${pos.place} ${className}`}
-            style={{ top: pos.top, left: pos.left }}>
-            {children}
-            <span className={`stedly-popover-arrow place-${pos.place}`} aria-hidden="true"/>
-          </div>
-        )}
+        {pop && ReactDOM.createPortal(pop, document.body)}
       </>
     );
   }
@@ -308,7 +315,9 @@
     }, [open, onClose]);
 
     if (!open) return null;
-    return (
+    // PORTAL: drawer lives at the body level so the overlay covers the
+    // full viewport regardless of which workstation panel mounted it.
+    const drawer = (
       <div className="stedly-drawer-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} role="presentation">
         <aside
           ref={drawerRef}
@@ -335,6 +344,7 @@
         </aside>
       </div>
     );
+    return ReactDOM.createPortal(drawer, document.body);
   }
 
   Object.assign(window, { Tooltip, Popover, SideDrawer, isTouchDevice });

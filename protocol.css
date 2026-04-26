@@ -4127,3 +4127,176 @@ html { scroll-behavior: smooth; }
   .lock-card.shake { animation: none; }
   .lock-digit:focus { transform: none; }
 }
+
+/* =====================================================================
+   RESPONSIVE SWEEP — desktop / tablet / mobile / small mobile
+   Tap-target sizing per WCAG 2.1 AA (min 44×44 for primary actions).
+   Pill rows wrap on narrow widths so they never overflow.
+   ===================================================================== */
+
+.ws-qi-tag-row,
+.ws-section-title-row,
+.ws-section-meta-row {
+  flex-wrap: wrap;
+}
+.trust-modal-overlay,
+.stedly-drawer-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+}
+
+@media (max-width: 1024px) {
+  .ws-shell { max-width: 100%; padding-left: 16px; padding-right: 16px; }
+  .ws-paper-head, .ws-section-head { padding-left: 22px; padding-right: 22px; }
+  .ws-inquiry-frame, .ws-compose, .ws-asset, .ws-draft-foot {
+    margin-left: 22px; margin-right: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ws-topbar {
+    padding: 12px 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .ws-topbar-right {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+  .ws-gmail-pill { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ws-gmail-mail { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .ws-queue-list { max-height: 300px !important; }
+
+  .ws-paper-head { padding: 16px 18px 14px; flex-wrap: wrap; gap: 10px; }
+  .ws-thread-meta { align-items: flex-start; }
+  .ws-section-head { padding: 12px 18px; flex-wrap: wrap; gap: 8px; }
+  .ws-section-meta-row { width: 100%; justify-content: flex-start; }
+  .ws-inquiry-frame, .ws-compose, .ws-asset { margin: 14px 18px 18px; }
+  .ws-inquiry { padding: 14px 16px 16px; }
+  .ws-draft-foot { padding-left: 18px; padding-right: 18px; }
+
+  .ws-compose-row { padding: 10px 14px; gap: 10px; }
+  .ws-compose-label { width: auto; min-width: 56px; }
+  .ws-compose-subject, .ws-compose-to {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ws-compose .ws-draft { padding: 14px 14px 12px; }
+  .ws-compose .ws-draft-input { font-size: 14px; line-height: 1.65; }
+
+  .stedly-drawer { width: 100% !important; max-width: 100%; }
+
+  .trust-modal { max-width: calc(100vw - 28px); border-radius: 12px; }
+  .trust-modal-foot { flex-direction: column-reverse; gap: 8px; }
+  .trust-btn { width: 100%; height: 44px; font-size: 13.5px; }
+
+  .ws-priority-tab { min-height: 32px; padding: 6px 10px; font-size: 11px; }
+
+  .ws-footer { grid-template-columns: 1fr; gap: 8px; padding: 10px 14px; }
+  .ws-footer-left { padding-left: 0; font-size: 12px; }
+  .ws-sync { width: 100%; height: 48px; font-size: 13.5px; }
+  .ws-stage { padding-bottom: 130px; }
+
+  .stedly-tooltip { max-width: calc(100vw - 24px); font-size: 12.5px; }
+  .stedly-popover { max-width: calc(100vw - 24px); }
+
+  .ws-connect-hero { padding: 32px 18px 24px; }
+  .ws-connect-hero h2 { font-size: 22px; }
+  .ws-connect-points { max-width: 100%; }
+  .ws-connect-cta { width: 100%; height: 48px; font-size: 13.5px; }
+
+  .auth-card { padding: 26px 22px 22px; border-radius: 14px; }
+
+  .lock-card { padding: 28px 22px 22px; max-width: 100%; }
+  .lock-pinrow { gap: 8px; }
+  .lock-digit { width: 52px; height: 60px; font-size: 22px; }
+}
+
+@media (max-width: 480px) {
+  .ws-topbar { padding: 10px 12px; }
+  .ws-brand-name { font-size: 14px; }
+  .ws-brand-suffix { font-size: 9px; padding: 1px 5px; }
+  .ws-corner-name { display: none; }
+  .ws-gmail-pill { padding: 0 8px; height: 26px; font-size: 11px; }
+  .ws-gmail-mail { max-width: 110px; }
+
+  .ws-qi { padding: 12px 14px 11px 16px; }
+  .ws-qi:hover { padding-left: 18px; }
+  .ws-qi.active { padding-left: 18px; }
+  .ws-qi-from { font-size: 13px; }
+  .ws-qi-co { font-size: 11.5px; }
+  .ws-qi-preview { font-size: 11.5px; }
+
+  .ws-sec-num { font-size: 10.5px; padding: 2px 6px; }
+  .ws-section-eyebrow { font-size: 12.5px; }
+  .ws-section-focal { font-size: 9px; padding: 1px 6px; }
+
+  .ws-inquiry { font-size: 13px; line-height: 1.55; }
+  .ws-thread-from { font-size: 14.5px; }
+  .ws-thread-subj { font-size: 12.5px; }
+  .ws-thread-mail { font-size: 11px; }
+
+  .ws-inquiry-from { flex-wrap: wrap; gap: 4px; }
+  .ws-replyto-warn { font-size: 10px; padding: 2px 7px; }
+
+  .ws-asset { padding: 16px 14px 18px; }
+  .ws-pdf-canvas { padding: 14px; }
+  .ws-pdf-canvas .af-pdf-page { max-width: 100%; }
+
+  .ws-sync { letter-spacing: 0.03em; font-size: 13px; }
+
+  .lock-card { padding: 24px 18px 18px; border-radius: 12px; }
+  .lock-title { font-size: 19px; }
+  .lock-sub { font-size: 12.5px; }
+  .lock-digit { width: 46px; height: 54px; font-size: 20px; border-radius: 10px; }
+  .lock-pinrow { gap: 6px; }
+}
+
+@media (max-width: 360px) {
+  .ws-topbar { padding: 8px 10px; }
+  .ws-brand-suffix { display: none; }
+  .ws-paper-head { padding: 14px 14px 12px; }
+  .ws-section-head { padding: 10px 14px; }
+  .ws-inquiry-frame, .ws-compose, .ws-asset { margin: 12px 14px 14px; }
+  .lock-digit { width: 42px; height: 50px; font-size: 18px; }
+  .lock-pinrow { gap: 5px; }
+  .ws-link-chip { font-size: 10.5px; padding: 3px 8px; }
+}
+
+@media (pointer: coarse) {
+  .ws-priority-tab,
+  .ws-mini-btn,
+  .dash-pill,
+  .md-pill,
+  .ws-link-chip,
+  .ws-corner-trigger,
+  .ws-gmail-pill,
+  .ws-corner-item,
+  .ws-version button {
+    min-height: 36px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  .ws-sync, .auth-submit, .ws-connect-cta, .lock-digit {
+    min-height: 44px;
+  }
+  .ws-qi:hover { transform: none; }
+  .ws-paper:hover { box-shadow: var(--soft-1), var(--soft-3), var(--soft-deep); }
+  .ws-sync:hover { transform: none; }
+}
+
+@media (min-width: 1920px) {
+  .ws-shell { max-width: 1640px; }
+  .ws-paper { max-width: 1320px; margin-left: auto; margin-right: auto; }
+}
+
+@media (max-height: 480px) and (orientation: landscape) {
+  .lock-root { align-items: flex-start; padding-top: 24px; padding-bottom: 24px; overflow-y: auto; }
+  .trust-modal-overlay { align-items: flex-start; padding-top: 16px; padding-bottom: 16px; overflow-y: auto; }
+  .trust-modal { max-height: calc(100vh - 48px); overflow-y: auto; }
+}
