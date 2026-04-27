@@ -92,29 +92,50 @@ function PasswordStrengthMeter({ value }) {
 }
 
 // ─── SIGN UP ─────────────────────────────────────────────────────────────
+// Smooth navigation helper — uses useEffect (not render-time) so React
+// doesn't keep firing setTimeout on every render. Adds a brief fade so
+// the route change doesn't snap.
+function useAuthRedirect(targetHash) {
+  useEffectA(() => {
+    if (!targetHash) return;
+    // Tiny delay so the success state has a frame to paint before route swap.
+    const t = setTimeout(() => {
+      if (window.location.hash !== targetHash) {
+        window.location.hash = targetHash;
+      }
+    }, 220);
+    return () => clearTimeout(t);
+  }, [targetHash]);
+}
+
 function SignUpScreen({ onExit }) {
   const auth = useAuth();
   const [name, setName] = useStateA("");
   const [email, setEmail] = useStateA("");
   const [password, setPassword] = useStateA("");
+  const [humanVerified, setHumanVerified] = useStateA(false);
 
-  if (auth.user) {
-    // Already signed in — bounce to welcome / dashboard
-    setTimeout(() => { window.location.hash = auth.user.emailVerified ? "#/dashboard" : "#/verify"; }, 0);
-  }
+  // Smooth redirect once Firebase confirms the user is signed in. Replaces
+  // the old render-time `if (auth.user) setTimeout(...)` anti-pattern.
+  const target = auth.user
+    ? (auth.user.emailVerified ? "#/dashboard" : "#/verify")
+    : null;
+  useAuthRedirect(target);
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (!humanVerified) { return; }
     try {
       await auth.signUp({ email, password, name });
-      window.location.hash = "#/verify";
+      // The useAuthRedirect effect will fire when auth.user updates.
     } catch (_) { /* error already in auth.error */ }
   };
 
   const onGoogle = async () => {
+    if (!humanVerified) { return; }
     try {
       await auth.signInWithGoogle();
-      window.location.hash = "#/dashboard";
+      // Redirect handled by useAuthRedirect when auth.user populates.
     } catch (_) {}
   };
 
@@ -130,7 +151,7 @@ function SignUpScreen({ onExit }) {
           </div>
         )}
 
-        <GoogleButton onClick={onGoogle} busy={auth.busy} label="Sign up with Google" recommended/>
+        <GoogleButton onClick={onGoogle} busy={auth.busy || !humanVerified} label="Sign up with Google" recommended/>
         <p className="auth-google-note">
           Faster · email auto-verified · one click. Stedly only reads your basic profile —
           inbox access is requested separately later.
@@ -150,8 +171,14 @@ function SignUpScreen({ onExit }) {
 
           {auth.error && <div className="auth-error-box">{auth.error}</div>}
 
-          <button type="submit" className="auth-submit" disabled={auth.busy}>
-            {auth.busy ? "Creating account…" : "Create account"}
+          {/* Cosmetic captcha — auto-passes ~1.1s after click. Required
+              before submit (Google + email/password both gated on it). */}
+          {window.HumanCheck && (
+            <window.HumanCheck onPass={() => setHumanVerified(true)} label="I'm not a robot"/>
+          )}
+
+          <button type="submit" className="auth-submit" disabled={auth.busy || !humanVerified}>
+            {auth.busy ? "Creating account…" : !humanVerified ? "Verify above to continue" : "Create account"}
           </button>
 
           <p className="auth-fineprint">
@@ -173,28 +200,30 @@ function SignInScreen({ onExit }) {
   const auth = useAuth();
   const [email, setEmail] = useStateA("");
   const [password, setPassword] = useStateA("");
-  const [resetSent, setResetSent] = useStateA(false);
+  const [humanVerified, setHumanVerified] = useStateA(false);
 
-  // Already signed in — go to dashboard
-  if (auth.user) {
-    setTimeout(() => { window.location.hash = auth.user.emailVerified ? "#/dashboard" : "#/verify"; }, 0);
-  }
+  // Smooth redirect via useEffect (was render-time before, causing jitter).
+  const target = auth.user
+    ? (auth.user.emailVerified ? "#/dashboard" : "#/verify")
+    : null;
+  useAuthRedirect(target);
 
   // ?reset=1 banner after password reset email send
   const showResetBanner = window.location.hash.includes("reset=1");
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (!humanVerified) return;
     try {
-      const cred = await auth.signIn({ email, password });
-      window.location.hash = cred.user.emailVerified ? "#/dashboard" : "#/verify";
+      await auth.signIn({ email, password });
+      // Redirect handled by useAuthRedirect on auth.user populate.
     } catch (_) {}
   };
 
   const onGoogle = async () => {
+    if (!humanVerified) return;
     try {
       await auth.signInWithGoogle();
-      window.location.hash = "#/dashboard";
     } catch (_) {}
   };
 
@@ -216,7 +245,7 @@ function SignInScreen({ onExit }) {
           </div>
         )}
 
-        <GoogleButton onClick={onGoogle} busy={auth.busy} label="Continue with Google"/>
+        <GoogleButton onClick={onGoogle} busy={auth.busy || !humanVerified} label="Continue with Google"/>
 
         <Divider>or with email</Divider>
 
@@ -233,8 +262,12 @@ function SignInScreen({ onExit }) {
 
           {auth.error && <div className="auth-error-box">{auth.error}</div>}
 
-          <button type="submit" className="auth-submit" disabled={auth.busy}>
-            {auth.busy ? "Signing in…" : "Sign in"}
+          {window.HumanCheck && (
+            <window.HumanCheck onPass={() => setHumanVerified(true)} label="I'm not a robot"/>
+          )}
+
+          <button type="submit" className="auth-submit" disabled={auth.busy || !humanVerified}>
+            {auth.busy ? "Signing in…" : !humanVerified ? "Verify above to continue" : "Sign in"}
           </button>
         </form>
 

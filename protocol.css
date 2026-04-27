@@ -4300,3 +4300,202 @@ html { scroll-behavior: smooth; }
   .trust-modal-overlay { align-items: flex-start; padding-top: 16px; padding-bottom: 16px; overflow-y: auto; }
   .trust-modal { max-height: calc(100vh - 48px); overflow-y: auto; }
 }
+
+/* =====================================================================
+   HUMAN VERIFICATION (cosmetic captcha, looks like Cloudflare Turnstile)
+   ===================================================================== */
+.human-check {
+  display: flex; align-items: center; gap: 14px;
+  margin: 8px 0 4px;
+  padding: 12px 14px;
+  background: #FAFAFA;
+  border: 1px solid #E4E4E7;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color .18s var(--ease-natural), box-shadow .18s var(--ease-natural), background .18s var(--ease-natural);
+  outline: none;
+}
+.human-check:hover { border-color: #D4D4D8; background: #FFFFFF; box-shadow: 0 1px 2px rgba(15,23,42,0.04); }
+.human-check:focus-visible { border-color: var(--ws-accent-2); box-shadow: 0 0 0 3px rgba(34,197,94,0.15); }
+.human-check.state-checking { background: #FFFFFF; border-color: #C7D2FE; cursor: progress; }
+.human-check.state-verified { background: #ECFDF3; border-color: #BBF7D0; cursor: default; }
+
+.hc-box {
+  width: 26px; height: 26px;
+  border: 2px solid #C7CDD4;
+  border-radius: 5px;
+  background: #FFFFFF;
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #15803D;
+  transition: border-color .2s, background .2s;
+}
+.human-check.state-checking .hc-box { border-color: #6366F1; }
+.human-check.state-verified .hc-box {
+  border-color: #15803D;
+  background: #15803D;
+  color: #FFFFFF;
+}
+.hc-box-empty { width: 0; height: 0; }
+.hc-box-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(99,102,241,0.25);
+  border-top-color: #6366F1;
+  border-radius: 50%;
+  animation: hc-spin .7s linear infinite;
+}
+@keyframes hc-spin { to { transform: rotate(360deg); } }
+.human-check.state-verified .hc-box svg { animation: hc-check-pop .42s var(--spring); }
+@keyframes hc-check-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  60%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.hc-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ws-text);
+  letter-spacing: -0.005em;
+}
+.human-check.state-checking .hc-label { color: #4338CA; }
+.human-check.state-verified .hc-label { color: #15803D; font-weight: 600; }
+
+.hc-brand {
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+  padding-left: 12px;
+  border-left: 1px solid #E4E4E7;
+}
+.hc-brand-mark {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #22C55E, #15803D);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 2px rgba(21,128,61,0.3);
+}
+.hc-brand-stack {
+  display: flex; flex-direction: column; align-items: flex-start;
+  font-family: var(--font-mono);
+  line-height: 1.1;
+}
+.hc-brand-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ws-text);
+}
+.hc-brand-tag {
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ws-muted);
+}
+
+@media (max-width: 480px) {
+  .human-check { padding: 10px 12px; gap: 10px; }
+  .hc-label { font-size: 13px; }
+  .hc-brand { padding-left: 10px; gap: 6px; }
+  .hc-brand-mark { width: 20px; height: 20px; }
+}
+
+/* =====================================================================
+   MOBILE MASTER-DETAIL DASHBOARD
+   On mobile, only one of queue / workstation is visible at a time.
+   Tapping a queue item swaps to the workstation; the back button
+   on the workstation swaps back to the queue.
+   ===================================================================== */
+@media (max-width: 768px) {
+  .ws-shell.is-mobile {
+    padding: 0;
+    gap: 0;
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+  .ws-shell.is-mobile.mobile-view-queue .ws-stage   { display: none; }
+  .ws-shell.is-mobile.mobile-view-workstation .ws-queue { display: none; }
+
+  .ws-shell.is-mobile .ws-queue {
+    border-radius: 0;
+    border-left: none; border-right: none;
+    max-height: none;
+    position: static;
+  }
+  .ws-shell.is-mobile .ws-queue-list {
+    max-height: none !important;
+    height: auto;
+    overflow-y: auto;
+  }
+  .ws-shell.is-mobile.mobile-view-queue .ws-priority-bar {
+    position: sticky; top: 0; z-index: 4;
+  }
+
+  .ws-shell.is-mobile .ws-stage {
+    padding-left: 0; padding-right: 0; padding-bottom: 130px;
+  }
+  .ws-shell.is-mobile .ws-paper {
+    border-radius: 0;
+    border-left: none; border-right: none;
+    box-shadow: none;
+  }
+
+  .ws-mobile-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin: 12px 14px 8px;
+    padding: 8px 12px;
+    background: var(--ws-paper);
+    border: 1px solid var(--ws-line);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ws-text);
+    cursor: pointer;
+    transition: background .14s, border-color .14s;
+    align-self: flex-start;
+  }
+  .ws-mobile-back:hover { background: var(--ws-gallery); border-color: var(--ws-line-2); }
+  .ws-mobile-back svg { color: var(--ws-muted); flex-shrink: 0; }
+  .ws-mobile-back-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--ws-text);
+    color: #FFFFFF;
+    padding: 1px 7px;
+    border-radius: 999px;
+  }
+}
+@media (min-width: 769px) {
+  .ws-mobile-back { display: none !important; }
+}
+
+/* =====================================================================
+   LANDING — hide embedded dashboard mockup on mobile
+   The macOS-style ApprovalFeedMock requires ≥760px. On mobile, the
+   hero + value chips already convey the message.
+   ===================================================================== */
+@media (max-width: 768px) {
+  .product-stage { display: none !important; }
+  .hero { padding-bottom: 40px !important; }
+}
+
+/* =====================================================================
+   AUTH PAGES — smoother route transitions
+   ===================================================================== */
+.auth-card {
+  animation: auth-card-in 320ms var(--spring) both;
+  will-change: opacity, transform;
+}
+@keyframes auth-card-in {
+  0%   { opacity: 0; transform: translateY(8px); }
+  60%  { opacity: 1; transform: translateY(-2px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.auth-root {
+  transition: background 280ms var(--ease-natural);
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-card { animation: none; }
+  .human-check.state-verified .hc-box svg { animation: none; }
+}

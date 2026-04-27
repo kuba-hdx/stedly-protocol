@@ -207,18 +207,41 @@ function CornerMenu({ onExit, gmailEmail, onDisconnect, authedUser, onSignOut })
   );
 }
 
+// Tiny media-query hook — mobile dashboard pattern hinges on it.
+function useMobileViewport() {
+  const [isMobile, setIsMobile] = React.useState(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return false;
+    return window.matchMedia("(max-width: 768px)").matches;
+  });
+  React.useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(max-width: 768px)");
+    const onChange = (e) => setIsMobile(e.matches);
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else mq.addListener(onChange);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
+      else mq.removeListener(onChange);
+    };
+  }, []);
+  return isMobile;
+}
+
 function Workstation({ onExit, authedUser, onSignOut }) {
   const [activeId, setActiveId] = useStateD(null);
   const [edits, setEdits]       = useStateD({});
   const [subjects, setSubjects] = useStateD({});
   const [view, setView]         = useStateD({});
   const [pdfStamp, setPdfStamp] = useStateD({});
-  const [synced, setSynced]     = useStateD({});           // { id: { id, threadId } }
+  const [synced, setSynced]     = useStateD({});
   const [syncing, setSyncing]   = useStateD(false);
   const [syncError, setSyncError] = useStateD(null);
   const [toast, setToast]       = useStateD(null);
   const [transitionKey, setTransitionKey] = useStateD(0);
   const [priorityFilter, setPriorityFilter] = useStateD("all");
+  // Mobile master-detail — "queue" or "workstation". Ignored on desktop.
+  const [mobileView, setMobileView] = useStateD("queue");
+  const isMobile = useMobileViewport();
   const draftRef = useRefD(null);
 
   const gmail = useGmailAuth();
@@ -365,11 +388,17 @@ function Workstation({ onExit, authedUser, onSignOut }) {
   const shownEditable    = currentView === "current";
 
   const onSelect = useCallbackD((id) => {
-    if (id === activeId) return;
+    if (id === activeId) {
+      // Same item tapped again on mobile from the queue → just open it.
+      if (isMobile) setMobileView("workstation");
+      return;
+    }
     setActiveId(id);
     setSyncError(null);
     setTransitionKey((k) => k + 1);
-  }, [activeId]);
+    // On mobile, opening a queue item swaps to the workstation view.
+    if (isMobile) setMobileView("workstation");
+  }, [activeId, isMobile]);
 
   // Toast helper (not a hook — plain function).
   const showToast = (kind, msg, ms = 3800) => {
@@ -506,7 +535,7 @@ function Workstation({ onExit, authedUser, onSignOut }) {
         </div>
       </header>
 
-      <div className="ws-shell">
+      <div className={`ws-shell ${isMobile ? `is-mobile mobile-view-${mobileView}` : ""}`}>
         {/* LEFT — The Queue */}
         <aside className="ws-queue" aria-label="Pending tasks">
           <div className="ws-queue-head">
@@ -625,6 +654,19 @@ function Workstation({ onExit, authedUser, onSignOut }) {
 
         {/* RIGHT — The Workstation */}
         <main className="ws-stage" key={`stage-${transitionKey}`}>
+          {/* Mobile-only "back to inbox" — visible only when mobile + workstation view */}
+          {isMobile && (
+            <button
+              className="ws-mobile-back"
+              onClick={() => setMobileView("queue")}
+              aria-label="Back to inbox">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+              <span>Inbox</span>
+              <span className="ws-mobile-back-count">{sourceQueue.filter((q) => !synced[q.id]).length}</span>
+            </button>
+          )}
           <div className="ws-paper">
             {/* Thread header */}
             <div className={`ws-paper-head tone-${intentTone}`}>
